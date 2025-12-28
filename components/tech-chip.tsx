@@ -3,20 +3,18 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useTheme } from "next-themes"
+import Image from "next/image" // Import Next.js Image
 import { cn } from "@/lib/utils"
 
 interface TechChipProps {
   label: string
-  /**
-   * Main brand color in Hex format (e.g. #00F0FF for Flutter)
-   */
   color: string
-  /**
-   * Optional custom icon (SVG). If not provided, you can pass a Lucide icon component via the `icon` prop.
+  /** * Path to your local icon in public folder (e.g. "/icons/flutter.svg") 
+   * This takes priority over the `icon` prop.
    */
-  customIcon?: React.ReactNode
+  iconSrc?: string
   /**
-   * Fallback for standard Lucide icons
+   * Fallback Lucide icon if you don't have a file for this tech
    */
   icon?: React.ComponentType<{ className?: string }>
   className?: string
@@ -25,43 +23,31 @@ interface TechChipProps {
 export function TechChip({ 
   label, 
   color, 
-  customIcon, 
+  iconSrc, 
   icon: Icon,
   className 
 }: TechChipProps) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Avoid hydration mismatch by waiting for mount
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Default to dark styles if not yet mounted (prevents flicker)
   const isDark = mounted ? resolvedTheme === "dark" : true
 
-  // --- STYLES BASED ON FIGMA CODE ---
-  
-  // Background
+  // --- STYLES ---
   const bgStyle = isDark ? '#1A1A1A' : '#F5F5F5'
-  
-  // Border
-  // Dark: 20% opacity of brand color
-  // Light: 15% opacity of brand color
   const borderStyle = `1px solid ${hexToRgba(color, isDark ? 0.2 : 0.15)}`
   
-  // Box Shadow (Complex Glow)
-  // Dark: Inset glow (10%) + Drop shadow (30% black)
-  // Light: Inset glow (5%) + Drop shadow (8% black)
   const shadowStyle = isDark
     ? `inset 0 0 20px ${hexToRgba(color, 0.1)}, 0 4px 12px rgba(0, 0, 0, 0.3)`
     : `inset 0 0 20px ${hexToRgba(color, 0.05)}, 0 2px 8px rgba(0, 0, 0, 0.08)`
 
-  // Text Color
-  // Light mode uses a slightly darker version of the brand color for readability
   const textColor = isDark ? color : adjustColorBrightness(color, -20)
 
-  // Icon Glow Filter
+  // Note: We can't use drop-shadow on <Image> as easily as SVG, 
+  // so we use a subtle glow on the container instead for local files.
   const iconFilter = isDark 
     ? `drop-shadow(0 0 8px ${hexToRgba(color, 0.6)})`
     : `drop-shadow(0 0 4px ${hexToRgba(color, 0.4)})`
@@ -82,11 +68,18 @@ export function TechChip({
     >
       {/* Icon Container */}
       <div 
-        className="flex items-center justify-center transition-all duration-300"
-        style={{ filter: iconFilter }}
+        className="relative flex items-center justify-center w-6 h-6"
+        // Apply glow filter only if it's a Component, or use CSS class for Image if needed
+        style={Icon ? { filter: iconFilter } : {}}
       >
-        {customIcon ? (
-          customIcon
+        {iconSrc ? (
+          <Image 
+            src={iconSrc} 
+            alt={label} 
+            fill 
+            className="object-contain" 
+            sizes="24px"
+          />
         ) : Icon ? (
           <Icon className="w-5 h-5" style={{ color: color }} />
         ) : null}
@@ -103,43 +96,20 @@ export function TechChip({
   )
 }
 
-// --- HELPER FUNCTIONS ---
-
-/**
- * Helper to convert Hex to RGBA for opacity handling
- */
+// --- HELPERS (Keep these at the bottom) ---
 function hexToRgba(hex: string, alpha: number) {
-  // Remove # if present
   const cleanHex = hex.replace('#', '');
-  
-  // Parse r, g, b
   const r = parseInt(cleanHex.substring(0, 2), 16);
   const g = parseInt(cleanHex.substring(2, 4), 16);
   const b = parseInt(cleanHex.substring(4, 6), 16);
-  
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-/**
- * Helper to darken/lighten a color (for Light Mode text readability)
- * percent: negative to darken, positive to lighten
- */
 function adjustColorBrightness(hex: string, percent: number) {
     const num = parseInt(hex.replace("#", ""), 16);
     const amt = Math.round(2.55 * percent);
     const R = (num >> 16) + amt;
     const B = ((num >> 8) & 0x00ff) + amt;
     const G = (num & 0x0000ff) + amt;
-
-    return (
-        "#" +
-        (
-            0x1000000 +
-            (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-            (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 +
-            (G < 255 ? (G < 1 ? 0 : G) : 255)
-        )
-        .toString(16)
-        .slice(1)
-    );
+    return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
 }

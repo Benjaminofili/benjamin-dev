@@ -2,28 +2,29 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Cloud, Atom, Code } from "lucide-react"
-import { useTheme } from "next-themes" // Import theme hook for the dock styles
+import { Cloud, Atom, Code } from "lucide-react" // Added icons
+import { useTheme } from "next-themes"
 import { TechChip } from "./tech-chip"
 import { GlowingSphere } from "./glowing-sphere"
+import { TECH_COLORS } from "@/lib/constants" // Import the colors
 
-// Hex codes from Figma
+// Map your icons to the centralized colors
 const techStack = [
   { 
     icon: Cloud, 
     label: "Flutter", 
-    color: "#00F0FF" 
+    color: TECH_COLORS.Flutter 
   },
   { 
     icon: Atom, 
     label: "React", 
-    color: "#0066FF" 
+    color: TECH_COLORS.React 
   },
   { 
     icon: Code, 
     label: "Python", 
-    color: "#FFD700" 
-  },
+    color: TECH_COLORS.Python 
+  }
 ]
 
 export function HeroSection() {
@@ -40,6 +41,7 @@ export function HeroSection() {
     <section className="min-h-screen flex items-center justify-center px-6 pt-24 pb-12">
       <div className="max-w-7xl w-full mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -86,9 +88,9 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.9 }}
               className="mt-4"
             >
-              {/* --- FIGMA DOCK CONTAINER --- */}
+              {/* Floating Dock */}
               <div 
-                className="inline-flex items-center gap-4 px-8 py-4 rounded-full transition-all duration-300 flex-wrap"
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-300 flex-wrap"
                 style={{
                   background: isDark 
                     ? 'rgba(0, 0, 0, 0.6)' 
@@ -116,6 +118,7 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
+          {/* Sphere/Graphic */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
