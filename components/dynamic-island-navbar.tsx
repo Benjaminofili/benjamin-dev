@@ -1,0 +1,218 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Sun, Moon, Menu, X } from "lucide-react"
+import { useTheme } from "next-themes"
+
+const navLinks = [
+  { name: "Work", href: "#work" },
+  { name: "Journey", href: "#journey" },
+  { name: "About", href: "#about" },
+  { name: "Stack", href: "#stack" },
+]
+
+export function DynamicIslandNavbar() {
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState<string>("Work") // Default to Work
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Track active section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navLinks.map(link => ({
+        name: link.name,
+        element: document.getElementById(link.href.replace("#", ""))
+      }))
+
+      // Use center of viewport for better UX
+      const scrollPosition = window.scrollY + window.innerHeight / 3
+
+      // Check which section is currently most visible
+      let currentSection = "Work" // Default
+      
+      for (const section of sections) {
+        if (section.element) {
+          const rect = section.element.getBoundingClientRect()
+          const sectionTop = window.scrollY + rect.top
+          const sectionBottom = sectionTop + rect.height
+          
+          // Section is active if scroll position is within it
+          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            currentSection = section.name
+            break
+          }
+        }
+      }
+
+      setActiveSection(currentSection)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll() // Check initial position
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  if (!mounted) return null
+
+  const isDark = resolvedTheme === "dark"
+
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    const targetId = href.replace("#", "")
+    const elem = document.getElementById(targetId)
+    elem?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  return (
+    <>
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+      >
+        <div className="glass rounded-full px-4 py-2 md:px-6 md:py-3 flex items-center gap-4 md:gap-8 bg-background/60 backdrop-blur-md border border-border/40 shadow-lg">
+          
+          <motion.span
+            className="text-lg md:text-xl font-bold text-foreground tracking-tight font-display cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            BO
+          </motion.span>
+
+          {/* Desktop Navigation with Glowing Active Indicator */}
+          <div className="hidden md:flex items-center gap-2">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.name
+              
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleScroll(e, link.href)}
+                  onMouseEnter={() => setHoveredLink(link.name)}
+                  onMouseLeave={() => setHoveredLink(null)}
+                  className="relative px-4 py-2 text-sm font-medium transition-colors duration-300"
+                  style={{
+                    color: isActive 
+                      ? 'hsl(var(--foreground))' 
+                      : 'hsl(var(--muted-foreground))'
+                  }}
+                >
+                  {/* Hover Background Pill */}
+                  {hoveredLink === link.name && !isActive && (
+                    <motion.span
+                      layoutId="nav-hover-pill"
+                      className="absolute inset-0 bg-accent/50 rounded-full -z-10"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  
+                  {link.name}
+                  
+                  {/* Glowing Active Underline */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-active-indicator"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-neon-cyan via-electric-purple to-neon-cyan rounded-full"
+                      style={{
+                        boxShadow: isDark 
+                          ? '0 0 8px rgba(34, 211, 238, 0.6), 0 0 12px rgba(168, 85, 247, 0.4)'
+                          : '0 0 6px rgba(139, 92, 246, 0.5)'
+                      }}
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </a>
+              )
+            })}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className="p-2 rounded-full hover:bg-accent/20 transition-colors"
+            >
+              {isDark ? (
+                <Sun className="w-4 h-4 text-foreground/70 hover:text-neon-cyan" />
+              ) : (
+                <Moon className="w-4 h-4 text-foreground/70 hover:text-electric-purple" />
+              )}
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-full hover:bg-accent/20 transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-4 h-4 text-foreground" />
+              ) : (
+                <Menu className="w-4 h-4 text-foreground" />
+              )}
+            </motion.button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-40 md:hidden w-[90%] max-w-[300px]"
+          >
+            <div className="glass rounded-2xl p-4 flex flex-col gap-2 bg-background/90 border border-border shadow-2xl backdrop-blur-xl">
+              {navLinks.map((link, index) => {
+                const isActive = activeSection === link.name
+                
+                return (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => {
+                      handleScroll(e as any, link.href);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`text-sm font-medium rounded-lg py-3 text-center transition-all relative ${
+                      isActive 
+                        ? 'text-foreground bg-accent/30' 
+                        : 'text-foreground/80 hover:text-primary hover:bg-accent/50'
+                    }`}
+                  >
+                    {link.name}
+                    {isActive && (
+                      <motion.span
+                        layoutId="mobile-active-indicator"
+                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-gradient-to-r from-neon-cyan to-electric-purple rounded-full"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </motion.a>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
