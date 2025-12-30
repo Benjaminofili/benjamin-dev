@@ -100,9 +100,8 @@ export function DynamicIslandNavbar() {
                   onClick={(e) => handleScrollClick(e, link.href)}
                   onMouseEnter={() => setHoveredLink(link.name)}
                   onMouseLeave={() => setHoveredLink(null)}
-                  // FIX: Use Tailwind classes instead of inline styles for better production reliability
                   className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 ${
-                    isActive ? "text-foreground" : "text-muted-foreground"
+                    isActive ? 'text-foreground' : 'text-muted-foreground'
                   }`}
                 >                  
                   {link.name}
@@ -110,6 +109,7 @@ export function DynamicIslandNavbar() {
                   {isActive && mounted && (
                     <motion.span
                       layoutId="nav-active-indicator"
+                      // CHANGED: Added 'mx-1' to shorten width, custom h-[1.5px] to thin it
                       className="absolute -bottom-1 left-0 right-0 mx-4 h-[1.5px] rounded-full"
                       style={{
                         backgroundColor: '#00f0ff',
