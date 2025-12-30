@@ -100,8 +100,9 @@ export function DynamicIslandNavbar() {
                   onClick={(e) => handleScrollClick(e, link.href)}
                   onMouseEnter={() => setHoveredLink(link.name)}
                   onMouseLeave={() => setHoveredLink(null)}
+                  // FIX 1: Ensure text colors are using standard Tailwind utilities
                   className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground'
+                    isActive ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >                  
                   {link.name}
@@ -109,12 +110,9 @@ export function DynamicIslandNavbar() {
                   {isActive && mounted && (
                     <motion.span
                       layoutId="nav-active-indicator"
-                      // CHANGED: Added 'mx-1' to shorten width, custom h-[1.5px] to thin it
-                      className="absolute -bottom-1 left-0 right-0 mx-4 h-[1.5px] rounded-full"
-                      style={{
-                        backgroundColor: '#00f0ff',
-                        boxShadow: '0 0 8px #00f0ff' 
-                      }}
+                      // FIX 2: Replaced style prop with Tailwind arbitrary values
+                      // Using bg-[#00f0ff] for cyan and shadow arbitrary value for glow
+                      className="absolute -bottom-1 left-0 right-0 mx-4 h-[1.5px] rounded-full bg-[#00f0ff] shadow-[0_0_8px_#00f0ff]"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
@@ -143,7 +141,7 @@ export function DynamicIslandNavbar() {
               )}
             </motion.button>
 
-            {/* Mobile menu button - Show below md */}
+            {/* Mobile menu button */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
@@ -196,12 +194,9 @@ export function DynamicIslandNavbar() {
                     {isActive && (
                       <motion.span
                         layoutId="mobile-active-indicator"
-                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 rounded-full"
-                        style={{
-                          background: isDark 
-                            ? 'linear-gradient(90deg, #00f0ff 0%, #7000ff 50%, #00f0ff 100%)'
-                            : 'linear-gradient(90deg, #0d9488 0%, #6366f1 50%, #0d9488 100%)'
-                        }}
+                        // FIX 3: Replaced inline gradient style with Tailwind gradient classes
+                        // Uses dark: modifier to switch between the two gradients
+                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 rounded-full bg-gradient-to-r from-[#0d9488] via-[#6366f1] to-[#0d9488] dark:from-[#00f0ff] dark:via-[#7000ff] dark:to-[#00f0ff]"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
