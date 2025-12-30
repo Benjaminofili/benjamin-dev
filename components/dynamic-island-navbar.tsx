@@ -102,32 +102,22 @@ export function DynamicIslandNavbar() {
                   onMouseLeave={() => setHoveredLink(null)}
                   className="relative px-4 py-2 text-sm font-medium transition-colors duration-300"
                   style={{
+                    // FIX: Use variables directly without hsl() wrapper
                     color: isActive 
-                      ? 'hsl(var(--foreground))' 
-                      : 'hsl(var(--muted-foreground))'
+                      ? 'var(--foreground)' 
+                      : 'var(--muted-foreground)'
                   }}
-                >
-                  {hoveredLink === link.name && !isActive && mounted && (
-                    <motion.span
-                      layoutId="nav-hover-pill"
-                      className="absolute inset-0 bg-accent/50 rounded-full -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                  
+                >                  
                   {link.name}
                   
                   {isActive && mounted && (
                     <motion.span
                       layoutId="nav-active-indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full"
+                      // CHANGED: Added 'mx-1' to shorten width, custom h-[1.5px] to thin it
+                      className="absolute -bottom-1 left-0 right-0 mx-4 h-[1.5px] rounded-full"
                       style={{
-                        background: isDark 
-                          ? 'linear-gradient(90deg, #00f0ff 0%, #7000ff 50%, #00f0ff 100%)'
-                          : 'linear-gradient(90deg, #0d9488 0%, #6366f1 50%, #0d9488 100%)',
-                        boxShadow: isDark 
-                          ? '0 0 8px rgba(0, 240, 255, 0.6), 0 0 12px rgba(112, 0, 255, 0.4)'
-                          : '0 0 6px rgba(13, 148, 136, 0.5)'
+                        backgroundColor: '#00f0ff',
+                        boxShadow: '0 0 8px #00f0ff' 
                       }}
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
