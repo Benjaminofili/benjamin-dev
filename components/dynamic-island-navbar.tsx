@@ -4,20 +4,20 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 
 const navLinks = [
-  { name: "Style Work", href: "#work" },
-  { name: "Style Journey", href: "#journey" },
+  { name: "Tailwind Work", href: "#work" },
+  { name: "Tailwind Journey", href: "#journey" },
 ]
 
-export function NavbarStyleTest() {
+export function NavbarTailwindTest() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
-  const [activeSection, setActiveSection] = useState<string>("Style Work")
+  const [activeSection, setActiveSection] = useState<string>("Tailwind Work")
 
   return (
-    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50">
-      <div className="glass rounded-full px-6 py-3 flex items-center gap-8 bg-white/10 backdrop-blur-md border border-white/20">
+    <div className="fixed top-40 left-1/2 -translate-x-1/2 z-50">
+      <div className="glass rounded-full px-6 py-3 flex items-center gap-8 bg-background/60 backdrop-blur-md border border-border/40">
         
-        <span style={{ fontWeight: 'bold', color: 'var(--foreground)' }}>
-          STYLE TEST
+        <span className="font-bold text-foreground">
+          TW TEST
         </span>
 
         <div className="flex items-center gap-4">
@@ -31,26 +31,19 @@ export function NavbarStyleTest() {
                 onClick={(e) => { e.preventDefault(); setActiveSection(link.name); }}
                 onMouseEnter={() => setHoveredLink(link.name)}
                 onMouseLeave={() => setHoveredLink(null)}
-                className="relative px-4 py-2 text-sm font-medium transition-all duration-300"
-                // TEST: Pure Inline Styles
-                style={{
-                  color: isActive 
-                    ? 'var(--foreground)' // This relies on the global variable working
-                    : '#888888',          // Hardcoded fallback for inactive
-                  cursor: 'pointer'
-                }}
+                // TEST: Pure Tailwind Classes
+                // using text-foreground for active, and explicit text-zinc-500 for inactive
+                className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+                  isActive ? "text-foreground" : "text-zinc-500"
+                }`}
               >                  
                 {link.name}
                 
                 {isActive && (
                   <motion.span
-                    layoutId="style-active"
-                    className="absolute -bottom-1 left-0 right-0 mx-2 h-[2px] rounded-full"
-                    // TEST: Pure Inline Style for glow
-                    style={{
-                      backgroundColor: '#00f0ff',
-                      boxShadow: '0 0 10px #00f0ff' 
-                    }}
+                    layoutId="tw-active"
+                    // TEST: Pure Tailwind Arbitrary Values for glow
+                    className="absolute -bottom-1 left-0 right-0 mx-2 h-[2px] rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff]"
                   />
                 )}
               </a>
