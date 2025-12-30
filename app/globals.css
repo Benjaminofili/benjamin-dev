@@ -2,7 +2,7 @@
 
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *));
+@variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: var(--font-inter);
@@ -158,23 +158,23 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 
-/* UTILITIES 
-  These need to be kept for your glassmorphism effects
-*/
-@utility glass {
+/* Custom utility classes */
+.glass {
   background: var(--card);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
 }
 
-@utility tech-grid {
+.tech-grid {
   background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 50px 50px;

@@ -23,9 +23,8 @@ export function DynamicIslandNavbar() {
     setMounted(true)
   }, [])
 
-  // Track active section based on scroll position
   useEffect(() => {
-    if (!mounted) return // Only run after client mount
+    if (!mounted) return
 
     const handleScroll = () => {
       const sections = navLinks.map(link => ({
@@ -58,14 +57,13 @@ export function DynamicIslandNavbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [mounted])
 
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     const targetId = href.replace("#", "")
     const elem = document.getElementById(targetId)
     elem?.scrollIntoView({ behavior: "smooth" })
   }
 
-  // Determine theme - use 'dark' as default for SSR to match most common case
   const isDark = mounted ? resolvedTheme === "dark" : true
 
   return (
@@ -90,7 +88,7 @@ export function DynamicIslandNavbar() {
             BO
           </motion.span>
 
-          {/* Desktop Navigation with Glowing Active Indicator */}
+          {/* Desktop Navigation - Show on md and up */}
           <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => {
               const isActive = activeSection === link.name
@@ -99,7 +97,7 @@ export function DynamicIslandNavbar() {
                 <a
                   key={link.name}
                   href={link.href}
-                  onClick={(e) => handleScroll(e, link.href)}
+                  onClick={(e) => handleScrollClick(e, link.href)}
                   onMouseEnter={() => setHoveredLink(link.name)}
                   onMouseLeave={() => setHoveredLink(null)}
                   className="relative px-4 py-2 text-sm font-medium transition-colors duration-300"
@@ -109,7 +107,6 @@ export function DynamicIslandNavbar() {
                       : 'hsl(var(--muted-foreground))'
                   }}
                 >
-                  {/* Hover Background Pill */}
                   {hoveredLink === link.name && !isActive && mounted && (
                     <motion.span
                       layoutId="nav-hover-pill"
@@ -120,12 +117,14 @@ export function DynamicIslandNavbar() {
                   
                   {link.name}
                   
-                  {/* Glowing Active Underline */}
                   {isActive && mounted && (
                     <motion.span
                       layoutId="nav-active-indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-neon-cyan via-electric-purple to-neon-cyan rounded-full"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full"
                       style={{
+                        background: isDark 
+                          ? 'linear-gradient(90deg, #00f0ff 0%, #7000ff 50%, #00f0ff 100%)'
+                          : 'linear-gradient(90deg, #0d9488 0%, #6366f1 50%, #0d9488 100%)',
                         boxShadow: isDark 
                           ? '0 0 8px rgba(0, 240, 255, 0.6), 0 0 12px rgba(112, 0, 255, 0.4)'
                           : '0 0 6px rgba(13, 148, 136, 0.5)'
@@ -149,16 +148,16 @@ export function DynamicIslandNavbar() {
             >
               {mounted ? (
                 isDark ? (
-                  <Sun className="w-4 h-4 text-foreground/70 hover:text-neon-cyan transition-colors" />
+                  <Sun className="w-4 h-4 text-foreground/70 transition-colors" />
                 ) : (
-                  <Moon className="w-4 h-4 text-foreground/70 hover:text-electric-purple transition-colors" />
+                  <Moon className="w-4 h-4 text-foreground/70 transition-colors" />
                 )
               ) : (
-                // Placeholder during SSR
                 <div className="w-4 h-4" />
               )}
             </motion.button>
 
+            {/* Mobile menu button - Show below md */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
@@ -195,7 +194,7 @@ export function DynamicIslandNavbar() {
                     key={link.name}
                     href={link.href}
                     onClick={(e) => {
-                      handleScroll(e, link.href);
+                      handleScrollClick(e, link.href);
                       setIsMobileMenuOpen(false);
                     }}
                     initial={{ opacity: 0, x: -10 }}
@@ -211,7 +210,12 @@ export function DynamicIslandNavbar() {
                     {isActive && (
                       <motion.span
                         layoutId="mobile-active-indicator"
-                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-gradient-to-r from-neon-cyan to-electric-purple rounded-full"
+                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 rounded-full"
+                        style={{
+                          background: isDark 
+                            ? 'linear-gradient(90deg, #00f0ff 0%, #7000ff 50%, #00f0ff 100%)'
+                            : 'linear-gradient(90deg, #0d9488 0%, #6366f1 50%, #0d9488 100%)'
+                        }}
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
