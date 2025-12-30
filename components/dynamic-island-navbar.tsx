@@ -16,7 +16,6 @@ export function DynamicIslandNavbar() {
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [activeSection, setActiveSection] = useState<string>("Work")
 
   useEffect(() => {
@@ -68,17 +67,11 @@ export function DynamicIslandNavbar() {
 
   return (
     <>
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
-      >
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
         <div className="glass rounded-full px-4 py-2 md:px-6 md:py-3 flex items-center gap-4 md:gap-8 bg-background/60 backdrop-blur-md border border-border/40 shadow-lg">
           
-          <motion.span
+          <span
             className="text-lg md:text-xl font-bold text-foreground tracking-tight font-display cursor-pointer"
-            whileHover={{ scale: 1.05 }}
             onClick={() => {
               if (typeof window !== 'undefined') {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -86,9 +79,9 @@ export function DynamicIslandNavbar() {
             }}
           >
             BO
-          </motion.span>
+          </span>
 
-          {/* Desktop Navigation - Show on md and up */}
+          {/* Desktop Navigation - STRIPPED DOWN */}
           <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => {
               const isActive = activeSection === link.name
@@ -98,52 +91,38 @@ export function DynamicIslandNavbar() {
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleScrollClick(e, link.href)}
-                  onMouseEnter={() => setHoveredLink(link.name)}
-                  onMouseLeave={() => setHoveredLink(null)}
-                  // FIX: Replaced 'text-muted-foreground' with explicit 'text-zinc-500'
-                  // This matches the logic that worked in your "Tailwind Test" component
+                  // STRIPPED: No style prop, hardcoded safe colors
                   className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 ${
-                    isActive ? "text-foreground" : "text-zinc-500 dark:text-zinc-400"
+                    isActive 
+                      ? "text-black dark:text-white font-bold" 
+                      : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
                   }`}
                 >                  
                   {link.name}
-                  
-                  {isActive && mounted && (
-                    <motion.span
-                      layoutId="nav-active-indicator"
-                      className="absolute -bottom-1 left-0 right-0 mx-4 h-[1.5px] rounded-full bg-[#00f0ff] shadow-[0_0_8px_#00f0ff]"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
+                  {/* STRIPPED: Removed motion.span active indicator completely */}
                 </a>
               )
             })}
           </div>
 
           <div className="flex items-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => setTheme(isDark ? "light" : "dark")}
               className="p-2 rounded-full hover:bg-accent/20 transition-colors"
               aria-label="Toggle theme"
-              suppressHydrationWarning
             >
               {mounted ? (
                 isDark ? (
-                  <Sun className="w-4 h-4 text-foreground/70 transition-colors" />
+                  <Sun className="w-4 h-4 text-foreground/70" />
                 ) : (
-                  <Moon className="w-4 h-4 text-foreground/70 transition-colors" />
+                  <Moon className="w-4 h-4 text-foreground/70" />
                 )
               ) : (
                 <div className="w-4 h-4" />
               )}
-            </motion.button>
+            </button>
 
-            {/* Mobile menu button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-full hover:bg-accent/20 transition-colors"
               aria-label="Toggle menu"
@@ -153,12 +132,12 @@ export function DynamicIslandNavbar() {
               ) : (
                 <Menu className="w-4 h-4 text-foreground" />
               )}
-            </motion.button>
+            </button>
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Kept mostly same but simplified colors */}
       <AnimatePresence>
         {isMobileMenuOpen && mounted && (
           <motion.div
@@ -173,31 +152,21 @@ export function DynamicIslandNavbar() {
                 const isActive = activeSection === link.name
                 
                 return (
-                  <motion.a
+                  <a
                     key={link.name}
                     href={link.href}
                     onClick={(e) => {
                       handleScrollClick(e, link.href);
                       setIsMobileMenuOpen(false);
                     }}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
                     className={`text-sm font-medium rounded-lg py-3 text-center transition-all relative ${
                       isActive 
-                        ? 'text-foreground bg-accent/30' 
-                        : 'text-foreground/80 hover:text-primary hover:bg-accent/50'
+                        ? 'text-black dark:text-white bg-gray-100 dark:bg-gray-800' 
+                        : 'text-gray-500'
                     }`}
                   >
                     {link.name}
-                    {isActive && (
-                      <motion.span
-                        layoutId="mobile-active-indicator"
-                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-0.5 rounded-full bg-gradient-to-r from-[#0d9488] via-[#6366f1] to-[#0d9488] dark:from-[#00f0ff] dark:via-[#7000ff] dark:to-[#00f0ff]"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                    )}
-                  </motion.a>
+                  </a>
                 )
               })}
             </div>
