@@ -13,11 +13,11 @@ const navLinks = [
 ]
 
 export function DynamicIslandNavbar() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
-  const [activeSection, setActiveSection] = useState<string>("Work") // Default to Work
+  const [activeSection, setActiveSection] = useState<string>("Work")
 
   useEffect(() => {
     setMounted(true)
@@ -25,17 +25,16 @@ export function DynamicIslandNavbar() {
 
   // Track active section based on scroll position
   useEffect(() => {
+    if (!mounted) return // Only run after client mount
+
     const handleScroll = () => {
       const sections = navLinks.map(link => ({
         name: link.name,
         element: document.getElementById(link.href.replace("#", ""))
       }))
 
-      // Use center of viewport for better UX
       const scrollPosition = window.scrollY + window.innerHeight / 3
-
-      // Check which section is currently most visible
-      let currentSection = "Work" // Default
+      let currentSection = "Work"
       
       for (const section of sections) {
         if (section.element) {
@@ -43,7 +42,6 @@ export function DynamicIslandNavbar() {
           const sectionTop = window.scrollY + rect.top
           const sectionBottom = sectionTop + rect.height
           
-          // Section is active if scroll position is within it
           if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
             currentSection = section.name
             break
@@ -55,14 +53,10 @@ export function DynamicIslandNavbar() {
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll() // Check initial position
+    handleScroll()
 
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  if (!mounted) return null
-
-  const isDark = resolvedTheme === "dark"
+  }, [mounted])
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
@@ -70,6 +64,9 @@ export function DynamicIslandNavbar() {
     const elem = document.getElementById(targetId)
     elem?.scrollIntoView({ behavior: "smooth" })
   }
+
+  // Determine theme - use 'dark' as default for SSR to match most common case
+  const isDark = mounted ? resolvedTheme === "dark" : true
 
   return (
     <>
@@ -84,7 +81,11 @@ export function DynamicIslandNavbar() {
           <motion.span
             className="text-lg md:text-xl font-bold text-foreground tracking-tight font-display cursor-pointer"
             whileHover={{ scale: 1.05 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }
+            }}
           >
             BO
           </motion.span>
@@ -109,7 +110,7 @@ export function DynamicIslandNavbar() {
                   }}
                 >
                   {/* Hover Background Pill */}
-                  {hoveredLink === link.name && !isActive && (
+                  {hoveredLink === link.name && !isActive && mounted && (
                     <motion.span
                       layoutId="nav-hover-pill"
                       className="absolute inset-0 bg-accent/50 rounded-full -z-10"
@@ -120,14 +121,14 @@ export function DynamicIslandNavbar() {
                   {link.name}
                   
                   {/* Glowing Active Underline */}
-                  {isActive && (
+                  {isActive && mounted && (
                     <motion.span
                       layoutId="nav-active-indicator"
                       className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-neon-cyan via-electric-purple to-neon-cyan rounded-full"
                       style={{
                         boxShadow: isDark 
-                          ? '0 0 8px rgba(34, 211, 238, 0.6), 0 0 12px rgba(168, 85, 247, 0.4)'
-                          : '0 0 6px rgba(139, 92, 246, 0.5)'
+                          ? '0 0 8px rgba(0, 240, 255, 0.6), 0 0 12px rgba(112, 0, 255, 0.4)'
+                          : '0 0 6px rgba(13, 148, 136, 0.5)'
                       }}
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
@@ -143,11 +144,18 @@ export function DynamicIslandNavbar() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setTheme(isDark ? "light" : "dark")}
               className="p-2 rounded-full hover:bg-accent/20 transition-colors"
+              aria-label="Toggle theme"
+              suppressHydrationWarning
             >
-              {isDark ? (
-                <Sun className="w-4 h-4 text-foreground/70 hover:text-neon-cyan" />
+              {mounted ? (
+                isDark ? (
+                  <Sun className="w-4 h-4 text-foreground/70 hover:text-neon-cyan transition-colors" />
+                ) : (
+                  <Moon className="w-4 h-4 text-foreground/70 hover:text-electric-purple transition-colors" />
+                )
               ) : (
-                <Moon className="w-4 h-4 text-foreground/70 hover:text-electric-purple" />
+                // Placeholder during SSR
+                <div className="w-4 h-4" />
               )}
             </motion.button>
 
@@ -156,6 +164,7 @@ export function DynamicIslandNavbar() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-full hover:bg-accent/20 transition-colors"
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
                 <X className="w-4 h-4 text-foreground" />
@@ -169,7 +178,7 @@ export function DynamicIslandNavbar() {
 
       {/* Mobile Menu */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {isMobileMenuOpen && mounted && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -186,7 +195,7 @@ export function DynamicIslandNavbar() {
                     key={link.name}
                     href={link.href}
                     onClick={(e) => {
-                      handleScroll(e as any, link.href);
+                      handleScroll(e, link.href);
                       setIsMobileMenuOpen(false);
                     }}
                     initial={{ opacity: 0, x: -10 }}
