@@ -1,7 +1,7 @@
 import { AmbientBackground } from "@/components/ambient-background"
-// import { DynamicIslandNavbar } from "@/components/dynamic-island-navbar"
+import { DynamicIslandNavbar } from "@/components/dynamic-island-navbar"
 // import { NavbarStyleTest } from "@/components/dynamic-island-navbar"
-import { NavbarTailwindTest } from "@/components/dynamic-island-navbar"
+// import { NavbarTailwindTest } from "@/components/dynamic-island-navbar"
 import { HeroSection } from "@/components/hero-section"
 import { BentoGrid } from "@/components/bento-grid"
 import { ExperienceSection } from "@/components/experience-section"
@@ -12,9 +12,9 @@ import { Footer } from "@/components/footer"
 export default function HomePage() {
   return (
     <AmbientBackground>
-      {/* <DynamicIslandNavbar /> */}
+      <DynamicIslandNavbar />
       {/* <NavbarStyleTest /> */}
-      <NavbarTailwindTest />
+      {/* <NavbarTailwindTest /> */}
       <main>
         <HeroSection />
         <BentoGrid />
