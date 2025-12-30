@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { ConstellationGraph } from "./constellation-graph";
 const links = [
-  { label: "LinkedIn", href: "https://linkedin.com" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/awelechukwu-ofili-3b9450367/" },
   { label: "GitHub", href: "https://github.com/Benjaminofili" },
   { label: "Read My Resume", href: "/resume" },
 ];
