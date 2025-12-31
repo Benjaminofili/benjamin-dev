@@ -6,7 +6,7 @@ import { ConstellationGraph } from "./constellation-graph";
 const links = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/awelechukwu-ofili-3b9450367/" },
   { label: "GitHub", href: "https://github.com/Benjaminofili" },
-  { label: "Read My Resume", href: "/resume" },
+  { label: "Read My Resume", href: "/resume.pdf" },
 ];
 export function AboutSection() {
   return (
