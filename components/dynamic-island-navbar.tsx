@@ -112,14 +112,6 @@ export function DynamicIslandNavbar() {
                     isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >                  
-                  {/* Hover Pill */}
-                  {hoveredLink === link.name && !isActive && (
-                    <motion.span
-                      layoutId="nav-hover-pill"
-                      className="absolute inset-0 bg-accent/50 rounded-full -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
                   
                   {link.name}
                   
@@ -128,7 +120,7 @@ export function DynamicIslandNavbar() {
                     <motion.span
                       layoutId="nav-active-indicator"
                       className="absolute -bottom-1 left-0 right-0 mx-2 h-[1.5px] rounded-full bg-[#00f0ff] shadow-[0_0_8px_#00f0ff]"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
                 </a>
@@ -197,7 +189,7 @@ export function DynamicIslandNavbar() {
                       <motion.span
                         layoutId="mobile-active-indicator"
                         className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-[2px] rounded-full bg-gradient-to-r from-[#0d9488] via-[#6366f1] to-[#0d9488] dark:from-[#00f0ff] dark:via-[#7000ff] dark:to-[#00f0ff]"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
                     )}
                   </motion.a>
