@@ -16,8 +16,6 @@ export function DynamicIslandNavbar() {
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
-  // RESTORED: State for hover animations
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [activeSection, setActiveSection] = useState<string>("Work")
 
@@ -25,18 +23,53 @@ export function DynamicIslandNavbar() {
     setMounted(true)
   }, [])
 
-  // Keep scroll logic simple for now (manual click updates it), 
-  // we will re-enable the auto-scroll spy in the next step.
+  // RESTORED: Scroll Spy Logic
+  useEffect(() => {
+    if (!mounted) return
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 3
+      
+      // Default to "Work" if at top
+      if (scrollPosition < 100) {
+        setActiveSection("Work")
+        return
+      }
+
+      for (const link of navLinks) {
+        const sectionId = link.href.replace("#", "")
+        const element = document.getElementById(sectionId)
+        
+        if (element) {
+          const { offsetTop, offsetHeight } = element
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(link.name)
+            break // Stop checking once we found the active one
+          }
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    // Trigger once on mount to set initial state
+    handleScroll() 
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [mounted])
 
   const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
-    // Update active state immediately for instant feedback
+    // 1. Manually set active state (instant feedback)
     const targetName = navLinks.find(link => link.href === href)?.name
     if (targetName) setActiveSection(targetName)
 
+    // 2. Smooth Scroll
     const targetId = href.replace("#", "")
     const elem = document.getElementById(targetId)
     elem?.scrollIntoView({ behavior: "smooth" })
+    
+    // 3. Close mobile menu if open
+    setIsMobileMenuOpen(false)
   }
 
   const isDark = mounted ? resolvedTheme === "dark" : true
@@ -63,8 +96,7 @@ export function DynamicIslandNavbar() {
             BO
           </motion.span>
 
-          {/* Desktop Navigation */}
-          {/* KEEPING THE FIX: max-md:hidden */}
+          {/* Desktop Navigation (Visible on MD+) */}
           <div className="max-md:hidden flex items-center gap-2">
             {navLinks.map((link) => {
               const isActive = activeSection === link.name
@@ -80,7 +112,7 @@ export function DynamicIslandNavbar() {
                     isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >                  
-                  {/* RESTORED: Hover Pill Background */}
+                  {/* Hover Pill */}
                   {hoveredLink === link.name && !isActive && (
                     <motion.span
                       layoutId="nav-hover-pill"
@@ -91,11 +123,10 @@ export function DynamicIslandNavbar() {
                   
                   {link.name}
                   
-                  {/* RESTORED: Active Glowing Underline */}
+                  {/* Desktop Active Underline */}
                   {isActive && (
                     <motion.span
                       layoutId="nav-active-indicator"
-                      // Using Tailwind Arbitrary values for the glow to ensure it works
                       className="absolute -bottom-1 left-0 right-0 mx-2 h-[1.5px] rounded-full bg-[#00f0ff] shadow-[0_0_8px_#00f0ff]"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
@@ -105,44 +136,34 @@ export function DynamicIslandNavbar() {
             })}
           </div>
 
+          {/* Controls */}
           <div className="flex items-center gap-2">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setTheme(isDark ? "light" : "dark")}
               className="p-2 rounded-full hover:bg-accent/20 transition-colors"
-              aria-label="Toggle theme"
             >
               {mounted ? (
-                isDark ? (
-                  <Sun className="w-4 h-4 text-foreground/70" />
-                ) : (
-                  <Moon className="w-4 h-4 text-foreground/70" />
-                )
+                isDark ? <Sun className="w-4 h-4 text-foreground/70" /> : <Moon className="w-4 h-4 text-foreground/70" />
               ) : (
                 <div className="w-4 h-4" />
               )}
             </motion.button>
 
-            {/* Mobile menu button */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-full hover:bg-accent/20 transition-colors"
-              aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? (
-                <X className="w-4 h-4 text-foreground" />
-              ) : (
-                <Menu className="w-4 h-4 text-foreground" />
-              )}
+              {isMobileMenuOpen ? <X className="w-4 h-4 text-foreground" /> : <Menu className="w-4 h-4 text-foreground" />}
             </motion.button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu with Staggered Animation */}
       <AnimatePresence>
         {isMobileMenuOpen && mounted && (
           <motion.div
@@ -152,7 +173,7 @@ export function DynamicIslandNavbar() {
             transition={{ duration: 0.3 }}
             className="fixed top-24 left-1/2 -translate-x-1/2 z-40 md:hidden w-[90%] max-w-[300px]"
           >
-            <div className="glass rounded-2xl p-4 flex flex-col gap-2 bg-background/90 border border-border shadow-2xl backdrop-blur-xl">
+            <div className="glass rounded-2xl p-4 flex flex-col gap-2 bg-background/95 border border-border shadow-2xl backdrop-blur-xl">
               {navLinks.map((link, index) => {
                 const isActive = activeSection === link.name
                 
@@ -160,20 +181,25 @@ export function DynamicIslandNavbar() {
                   <motion.a
                     key={link.name}
                     href={link.href}
-                    onClick={(e) => {
-                      handleScrollClick(e, link.href);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    initial={{ opacity: 0, x: -10 }}
+                    onClick={(e) => handleScrollClick(e, link.href)}
+                    // Staggered entrance
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`text-sm font-medium rounded-lg py-3 text-center transition-all relative ${
-                      isActive 
-                        ? 'text-foreground bg-accent/30' 
-                        : 'text-foreground/80 hover:text-primary hover:bg-accent/50'
+                    transition={{ delay: index * 0.1 }}
+                    className={`relative p-3 text-center rounded-lg text-sm font-medium transition-colors ${
+                      isActive ? "text-foreground" : "text-muted-foreground hover:bg-accent/10"
                     }`}
                   >
                     {link.name}
+                    
+                    {/* Mobile Active Indicator (Gradient Line) */}
+                    {isActive && (
+                      <motion.span
+                        layoutId="mobile-active-indicator"
+                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-[2px] rounded-full bg-gradient-to-r from-[#0d9488] via-[#6366f1] to-[#0d9488] dark:from-[#00f0ff] dark:via-[#7000ff] dark:to-[#00f0ff]"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
                   </motion.a>
                 )
               })}
