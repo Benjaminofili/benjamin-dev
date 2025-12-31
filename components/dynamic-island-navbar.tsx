@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Menu, X } from "lucide-react"
 
 const navLinks = [
   { name: "Work", href: "#work" },
@@ -10,26 +11,24 @@ const navLinks = [
 ]
 
 export function DynamicIslandNavbar() {
-  // PHASE 2: No complex hooks, no scroll listeners, no theme logic.
   const [activeSection, setActiveSection] = useState<string>("Work")
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-      {/* Container: Added bg-red-500 temporarily to PROVE the container exists */}
-      <div className="glass rounded-full px-6 py-3 flex items-center gap-8 bg-background/80 backdrop-blur-md border border-border/40 shadow-lg">
+      <div className="glass rounded-full px-6 py-3 flex items-center gap-8 bg-white/80 dark:bg-black/80 backdrop-blur-md border border-gray-200 dark:border-gray-800 shadow-lg">
         
         <span 
-          className="text-xl font-bold text-foreground cursor-pointer"
+          className="text-xl font-bold text-black dark:text-white cursor-pointer"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           BO
         </span>
 
-        {/* CRITICAL CHANGE: 
-           Removed "hidden md:flex". Now it is just "flex". 
-           If this shows up on mobile now, that's fine. We just want to see it exist.
+        {/* TEST 3: Re-added "hidden md:flex". 
+            If links disappear on Desktop now, your Tailwind Breakpoints are broken. 
         */}
-        <div className="flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -37,14 +36,12 @@ export function DynamicIslandNavbar() {
               onClick={(e) => {
                 e.preventDefault()
                 setActiveSection(link.name)
-                // Basic scroll to ID
                 document.getElementById(link.href.replace("#", ""))?.scrollIntoView()
               }}
-              // PHASE 2: Standard, loud colors to ensure visibility
               className={`text-sm font-medium transition-colors ${
                 activeSection === link.name 
                   ? "text-blue-600 font-bold" 
-                  : "text-gray-600 hover:text-black"
+                  : "text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white"
               }`}
             >                  
               {link.name}
@@ -52,9 +49,30 @@ export function DynamicIslandNavbar() {
           ))}
         </div>
 
-        {/* Theme/Menu Toggle Placeholders (Visual only, no logic) */}
-        <div className="w-8 h-8 rounded-full bg-gray-200" />
+        {/* Mobile Toggle - Only shows on small screens */}
+        <button 
+            className="md:hidden p-1 text-black dark:text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </div>
+
+      {/* Simple Mobile Menu (No Framer Motion yet) */}
+      {isMobileMenuOpen && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 w-[90%] max-w-[300px] bg-white dark:bg-black border border-gray-200 dark:border-gray-800 p-4 rounded-xl shadow-xl flex flex-col gap-2">
+             {navLinks.map((link) => (
+                <a 
+                  key={link.name} 
+                  href={link.href} 
+                  className="p-2 text-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                    {link.name}
+                </a>
+             ))}
+        </div>
+      )}
     </nav>
   )
 }
