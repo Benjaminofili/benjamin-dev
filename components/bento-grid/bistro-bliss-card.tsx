@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 export function BistroBlissCard() {
   return (
@@ -43,11 +44,15 @@ export function BistroBlissCard() {
 
       {/* Text Content */}
       <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-background via-background/90 to-transparent z-10">
-        <h3 className="font-display text-xl font-bold text-foreground">Bistro Bliss</h3>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-sm text-muted-foreground">High-Performance Dashboard</p>
-          <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-neon-cyan transition-colors" />
-        </div>
+        <Link href="/work/bistro-bliss" className="block group/link cursor-pointer">
+          <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover/link:text-neon-cyan">
+            Bistro Bliss
+          </h3>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-sm text-muted-foreground">High-Performance Dashboard</p>
+            <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover/link:text-neon-cyan transition-colors" />
+          </div>
+        </Link>
       </div>
     </div>
   )

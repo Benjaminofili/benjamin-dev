@@ -12,7 +12,7 @@ export function IdentityCard() {
           className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-neon-cyan/50 shadow-[0_0_30px_rgba(0,240,255,0.3)]"
         >
           <img
-            src="/professional-portrait-silhouette-dark.jpg"
+            src="/professional-portrait.webp"
             alt="Benjamin Ofili"
             className="glitch-image w-full h-full object-cover"
           />

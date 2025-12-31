@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const tags = [
   { label: "FLUTTER", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
@@ -36,9 +37,12 @@ export function FusionFiestaCard() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-sm font-medium text-foreground/80 group-hover:text-neon-cyan transition-colors pointer-events-auto cursor-pointer">
+       <Link 
+          href="/work/fusion-fiesta"
+          className="flex items-center gap-2 text-sm font-medium text-foreground/80 group-hover:text-neon-cyan transition-colors pointer-events-auto cursor-pointer w-fit"
+        >
           View Case Study <ArrowRight className="w-4 h-4" />
-        </div>
+        </Link>
       </div>
 
       {/* Right Side (Image Only) */}
