@@ -6,23 +6,27 @@ import { Cloud, Atom, Code } from "lucide-react" // Added icons
 import { useTheme } from "next-themes"
 import { TechChip } from "./tech-chip"
 import { GlowingSphere } from "./glowing-sphere"
-import { TECH_COLORS } from "@/lib/constants" // Import the colors
+import { TECH_COLORS } from "@/lib/constants" 
+import { TechIcon, type IconName } from "@/components/ui/tech-icons"
 
 // Map your icons to the centralized colors
 const techStack = [
   { 
     icon: Cloud, 
     label: "Flutter", 
+    iconKey: "flutter",
     color: TECH_COLORS.Flutter 
   },
   { 
     icon: Atom, 
-    label: "React", 
+    label: "React",
+    iconKey: "react", 
     color: TECH_COLORS.React 
   },
   { 
     icon: Code, 
     label: "Python", 
+    iconKey: "python",
     color: TECH_COLORS.Python 
   }
 ]

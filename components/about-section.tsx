@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { TechIcon } from "@/components/ui/tech-icons";
 import { ConstellationGraph } from "./constellation-graph";
 const links = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/awelechukwu-ofili-3b9450367/" },
@@ -64,6 +65,12 @@ export function AboutSection() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-cyan-400 text-sm font-medium hover:text-cyan-300 transition-colors group"
                 >
+                {link.label === "LinkedIn" && (
+                    <TechIcon name="linkedin-logo" className="w-4 h-4 mr-1 text-cyan-400" />
+                )}
+                {link.label === "GitHub" && (
+                    <TechIcon name="github" className="w-4 h-4 mr-1 text-cyan-400" />
+                )}
                   {link.label}
                   <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </a>
