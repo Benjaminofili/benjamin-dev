@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Cloud, Atom, Code } from "lucide-react" // Added icons
+import { Cloud, Atom, Code } from "lucide-react"
 import { useTheme } from "next-themes"
 import { TechChip } from "./tech-chip"
 import { GlowingSphere } from "./glowing-sphere"
 import { TECH_COLORS } from "@/lib/constants" 
 import { TechIcon, type IconName } from "@/components/ui/tech-icons"
 
-// Map your icons to the centralized colors
 const techStack = [
   { 
     icon: Cloud, 
@@ -92,22 +91,14 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.9 }}
               className="mt-4"
             >
-              {/* Floating Dock */}
-              <div 
-                className="inline-flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-300 flex-wrap"
-                style={{
-                  background: isDark 
-                    ? 'rgba(0, 0, 0, 0.6)' 
-                    : 'rgba(255, 255, 255, 0.6)',
-                  backdropFilter: 'blur(20px) saturate(180%)',
-                  border: `1px solid ${isDark 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(0, 0, 0, 0.08)'}`,
-                  boxShadow: isDark
-                    ? 'inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 8px 32px rgba(0, 0, 0, 0.4)'
-                    : '0 4px 24px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.5)'
-                }}
-              >
+              {/* Tech Stack Chips with Subtle Glow */}
+              <div className="flex flex-wrap gap-2 sm:gap-3 relative">
+                {/* Subtle ambient glow behind chips */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-cyan-500/5 to-yellow-500/5 blur-3xl -z-10 rounded-full scale-150"
+                  aria-hidden="true"
+                />
+                
                 {techStack.map((tech, index) => (
                   <motion.div
                     key={tech.label}

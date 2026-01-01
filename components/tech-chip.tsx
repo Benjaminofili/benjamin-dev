@@ -5,27 +5,16 @@ import { motion } from "framer-motion"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-// Import your new icon component
 import { TechIcon, type IconName } from "@/components/ui/tech-icons"
 
 interface TechChipProps {
   label: string
   color: string
-  /** * Path to your local icon in public folder (e.g. "/icons/flutter.svg") 
-   * Priority: 1
-   */
   iconSrc?: string
-  /**
-   * Key for the SVG icon defined in tech-icons.tsx (e.g. "react", "python")
-   * Priority: 2
-   */
   iconKey?: string
-  /**
-   * Fallback Lucide icon
-   * Priority: 3
-   */
   icon?: React.ComponentType<{ className?: string, style?: React.CSSProperties }>
   className?: string
+  compact?: boolean // NEW: Add compact mode
 }
 
 export function TechChip({ 
@@ -34,7 +23,8 @@ export function TechChip({
   iconSrc, 
   iconKey,
   icon: Icon,
-  className 
+  className,
+  compact = false // NEW: Default to false for backward compatibility
 }: TechChipProps) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -65,7 +55,11 @@ export function TechChip({
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className={cn(
-        "flex items-center gap-3 px-5 py-3 rounded-lg transition-all duration-300 cursor-pointer",
+        "flex items-center rounded-lg transition-all duration-300 cursor-pointer",
+        // UPDATED: Responsive padding and gap
+        compact 
+          ? "gap-1.5 px-3 py-1.5" 
+          : "gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-3",
         className
       )}
       style={{
@@ -76,7 +70,11 @@ export function TechChip({
     >
       {/* Icon Container */}
       <div 
-        className="relative flex items-center justify-center w-6 h-6"
+        className={cn(
+          "relative flex items-center justify-center shrink-0",
+          // UPDATED: Responsive icon size
+          compact ? "w-4 h-4" : "w-5 h-5 sm:w-6 sm:h-6"
+        )}
         style={{ filter: iconFilter }}
       >
         {iconSrc ? (
@@ -88,20 +86,26 @@ export function TechChip({
             sizes="24px"
           />
         ) : iconKey ? (
-          // Render the TechIcon if iconKey is provided
           <TechIcon 
             name={iconKey as IconName} 
-            className="w-5 h-5" 
+            className={compact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"}
             style={{ color: color }} 
           />
         ) : Icon ? (
-          <Icon className="w-5 h-5" style={{ color: color }} />
+          <Icon 
+            className={compact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"}
+            style={{ color: color }} 
+          />
         ) : null}
       </div>
 
       {/* Label */}
       <span
-        className="font-mono text-sm font-semibold tracking-wide transition-colors duration-300"
+        className={cn(
+          "font-mono font-semibold tracking-wide transition-colors duration-300 whitespace-nowrap",
+          // UPDATED: Responsive text size
+          compact ? "text-xs" : "text-xs sm:text-sm"
+        )}
         style={{ color: textColor }}
       >
         {label}
