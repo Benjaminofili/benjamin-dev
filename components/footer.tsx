@@ -90,7 +90,7 @@ export function Footer() {
           className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border"
         >
           <p className="text-muted-foreground text-sm font-mono">
-            © 2025 Benjamin Ofili. Crafted in Lagos.
+            © 2025 Benjamin Ofili. All rights reserved.
           </p>
 
           <div className="flex items-center gap-6">
